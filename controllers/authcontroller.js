@@ -65,3 +65,16 @@ export const login = async (req, res) => {
     }
 }
 
+//controller function for user logout
+// This function handles user logout by clearing the JWT token cookie.
+export const logout = async (req, res) => {
+    try{
+        response.clearCookie("token", {httpOnly: true, 
+                                       secure: process.env.NODE_ENV === 'production', 
+                                       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
+                                    });
+            return res.json({ success: true, statuscode: 200, message: "Logout successful" });
+    }catch(error){
+        return res.json({ success: false, statuscode: 500, message: "Internal server error", message: error.message });
+    }
+}
