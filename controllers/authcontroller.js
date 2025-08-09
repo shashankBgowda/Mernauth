@@ -19,6 +19,14 @@ export const register = async (req, res) => {
         const User = new userModel({name,email,password: hashedPassword});
         await User.save(); // Save user to database
         return res.json({ success: true, statuscode: 201, message: "User registered successfully" });
+
+        const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        res.cookie("token", token, {httponly: true, 
+                                    secure: process.env.NODE_ENV==='production', 
+                                    sameSite: process.env.NODE_ENV==='production' ? 'none' : 'strict', 
+                                    maxage: 24 * 60 * 60 * 1000 }); 
+        // Set cookie with token
+        return res.json({ success: true, statuscode: 201, message: "User registered successfully", token });
     } catch (error) {
         return res.json({ success: false, statuscode: 500, statmessage: "Internal server error" , message: error.message });
     } 
